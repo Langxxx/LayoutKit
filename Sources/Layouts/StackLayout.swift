@@ -19,19 +19,19 @@ import CoreGraphics
 open class StackLayout<V: View>: BaseLayout<V> {
 
     /// The axis along which sublayouts are stacked.
-    open let axis: Axis
+    public let axis: Axis
 
     /**
      The distance in points between adjacent edges of sublayouts along the axis.
      For Distribution.EqualSpacing, this is a minimum spacing. For all other distributions it is an exact spacing.
      */
-    open let spacing: CGFloat
+    public let spacing: CGFloat
 
     /// The distribution of space along the stack's axis.
-    open let distribution: StackLayoutDistribution
+    public let distribution: StackLayoutDistribution
     
     /// The stacked layouts.
-    open let sublayouts: [Layout]
+    public let sublayouts: [Layout]
 
     public init(axis: Axis,
                 spacing: CGFloat = 0,
@@ -41,13 +41,31 @@ open class StackLayout<V: View>: BaseLayout<V> {
                 viewReuseId: String? = nil,
                 sublayouts: [Layout],
                 config: ((V) -> Void)? = nil) {
-        
+
         self.axis = axis
         self.spacing = spacing
         self.distribution = distribution
         self.sublayouts = sublayouts
         let flexibility = flexibility ?? StackLayout.defaultFlexibility(axis: axis, sublayouts: sublayouts)
         super.init(alignment: alignment, flexibility: flexibility, viewReuseId: viewReuseId, config: config)
+    }
+
+    init(axis: Axis,
+         spacing: CGFloat = 0,
+         distribution: StackLayoutDistribution = .fillFlexing,
+         alignment: Alignment = .fill,
+         flexibility: Flexibility? = nil,
+         viewReuseId: String? = nil,
+         viewClass: V.Type? = nil,
+         sublayouts: [Layout],
+         config: ((V) -> Void)? = nil) {
+
+        self.axis = axis
+        self.spacing = spacing
+        self.distribution = distribution
+        self.sublayouts = sublayouts
+        let flexibility = flexibility ?? StackLayout.defaultFlexibility(axis: axis, sublayouts: sublayouts)
+        super.init(alignment: alignment, flexibility: flexibility, viewReuseId: viewReuseId, viewClass: viewClass ?? V.self, config: config)
     }
 }
 
@@ -99,7 +117,7 @@ extension StackLayout: ConfigurableLayout {
             }
         }
 
-        let nonNilMeasuredSublayouts = sublayoutMeasurements.flatMap { $0 }
+        let nonNilMeasuredSublayouts = sublayoutMeasurements.compactMap { $0 }
 
         if distribution == .fillEqualSize && !nonNilMeasuredSublayouts.isEmpty {
             let maxAxisLength = nonNilMeasuredSublayouts.map({ AxisSize(axis: axis, size: $0.size).axisLength }).max() ?? 0

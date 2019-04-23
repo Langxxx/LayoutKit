@@ -22,11 +22,11 @@ import UIKit
  */
 open class ButtonLayout<Button: UIButton>: BaseLayout<Button>, ConfigurableLayout {
 
-    open let type: ButtonLayoutType
-    open let title: Text
-    open let image: ButtonLayoutImage
-    open let font: UIFont?
-    open let contentEdgeInsets: UIEdgeInsets
+    public let type: ButtonLayoutType
+    public let title: Text
+    public let image: ButtonLayoutImage
+    public let font: UIFont?
+    public let contentEdgeInsets: UIEdgeInsets
 
     public init(type: ButtonLayoutType,
                 title: String, // TODO: support attributed text once we figure out how to get tests to pass
@@ -44,6 +44,25 @@ open class ButtonLayout<Button: UIButton>: BaseLayout<Button>, ConfigurableLayou
         self.font = font
         self.contentEdgeInsets = contentEdgeInsets ?? ButtonLayout.defaultContentEdgeInsets(for: type, image: image)
         super.init(alignment: alignment, flexibility: flexibility, viewReuseId: viewReuseId, config: config)
+    }
+
+    init(type: ButtonLayoutType,
+         title: String,
+         image: ButtonLayoutImage = .defaultImage,
+         font: UIFont? = nil,
+         contentEdgeInsets: UIEdgeInsets? = nil,
+         alignment: Alignment = ButtonLayoutDefaults.defaultAlignment,
+         flexibility: Flexibility = ButtonLayoutDefaults.defaultFlexibility,
+         viewReuseId: String? = nil,
+         viewClass: Button.Type? = nil,
+         config: ((UIButton) -> Void)? = nil) {
+
+        self.type = type
+        self.title = .unattributed(title)
+        self.image = image
+        self.font = font
+        self.contentEdgeInsets = contentEdgeInsets ?? ButtonLayout.defaultContentEdgeInsets(for: type, image: image)
+        super.init(alignment: alignment, flexibility: flexibility, viewReuseId: viewReuseId, viewClass: viewClass ?? Button.self, config: config)
     }
 
     private static func defaultContentEdgeInsets(for type: ButtonLayoutType, image: ButtonLayoutImage) -> UIEdgeInsets {
